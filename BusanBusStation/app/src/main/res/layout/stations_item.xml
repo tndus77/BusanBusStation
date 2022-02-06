@@ -10,13 +10,15 @@
         android:layout_height="729dp"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp">
+        tools:layout_editor_absoluteY="1dp"
+        tools:ignore="MissingConstraints">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <LinearLayout
+                android:id="@+id/station_item"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
@@ -29,14 +31,14 @@
                     app:srcCompat="@drawable/busimage" />
 
                 <TextView
-                    android:id="@+id/name"
+                    android:id="@+id/bus_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="TextView" />
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/bus_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

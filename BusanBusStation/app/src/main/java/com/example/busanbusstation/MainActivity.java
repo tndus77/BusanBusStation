@@ -2,11 +2,15 @@ package com.example.busanbusstation;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -16,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,15 +31,23 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    RecyclerView recyclerView;
     static RequestQueue requestQueue;
     String TAG = "STATION LIST";
+    StationAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        adapter = new StationAdapter();
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
 
         Button btn = findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -47,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(String response) {
                                 String curr_tag = "";
-                                ArrayList<Station> arrayList = new ArrayList<>();
+
                                 Station station = new Station();
+                                adapter.clearItems();
 
                                 try {
                                     //xml 파싱
@@ -56,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                                     factory.setNamespaceAware(true);
                                     XmlPullParser xpp = factory.newPullParser();
 
+                                    xpp.setInput(new StringReader(response));
                                     //event type 얻어오기
                                     int eventType = xpp.getEventType();
 
@@ -73,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                                                 //태그의 끝
                                                 if(xpp.getName().equals("item")){
                                                     if(station.checkRecvAllData())
-                                                        arrayList.add(station);
+                                                        adapter.addItem(station);
                                                 }
                                                 curr_tag = "";
                                             case XmlPullParser.TEXT:
@@ -95,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
                                 catch (Exception e) {
                                     e.printStackTrace();
                                 }
+                                adapter.notifyDataSetChanged();
+                                Toast.makeText(getApplicationContext(), "수신완료", Toast.LENGTH_LONG).show();
                             }
                         },
                         new Response.ErrorListener() {
